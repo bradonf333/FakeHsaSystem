@@ -89,7 +89,7 @@ namespace HsaSystem.Models
     /// <param name="min">Minimum number.</param>
     /// <param name="max">Maximum number.</param>
     /// <param name="levelType">Type of Level to Set and Rate.</param>
-    private void SetLevelAndType(int min, int max, LevelType levelType)
+    public void SetLevelAndType(int min, int max, LevelType levelType)
     {
       var validLevelAndType = false;
 
