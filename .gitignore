@@ -1,1 +1,10 @@
 *.lock
+*.ide
+*.ide-shm
+*.ide-wal
+*.exe
+*.config
+*.pdb
+*.cache
+/HsaSystem/obj/Debug/HsaSystem.csproj.FileListAbsolute.txt
+*.suo
