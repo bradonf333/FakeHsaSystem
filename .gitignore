@@ -8,3 +8,9 @@
 *.cache
 /HsaSystem/obj/Debug/HsaSystem.csproj.FileListAbsolute.txt
 *.suo
+/HsaSystem.UnitTests/bin/Debug/netcoreapp2.2
+/HsaSystem.UnitTests/obj
+/Server/
+/.vs/
+.vs/
+Server/

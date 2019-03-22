@@ -6,13 +6,13 @@ namespace HsaSystem.Models
 {
   public class User
   {
-    private int Age { get; set; }
-    private int ActivityLevel { get; set; }
-    private int NutritionLevel { get; set; }
-    private bool Married { get; set; }
-    private int NumberOfCoveredDependents { get; set; }
-    private int SavingsDedicationLevel { get; set; }
-    private int EmployerBenefitsLevel { get; set; }
+    public int Age { get; private set; }
+    public int ActivityLevel { get; private set; }
+    public int NutritionLevel { get; private set; }
+    public bool Married { get; private set; }
+    public int NumberOfCoveredDependents { get; private set; }
+    public int SavingsDedicationLevel { get; private set; }
+    public int EmployerBenefitsLevel { get; private set; }
 
     private readonly IWriter _writer;
     private readonly IReader _reader;
@@ -21,11 +21,20 @@ namespace HsaSystem.Models
     {
       _writer = writer;
       _reader = reader;
+    }
 
+    /// <summary>
+    /// Sets all necessary info needed to create a User.
+    /// </summary>
+    /// <returns></returns>
+    public User Build()
+    {
       SetUsersAge();
       SetLevelAndType(1, 5, LevelType.Activity);
       SetLevelAndType(1, 5, LevelType.Nutrition);
       IsMarried();
+
+      return this;
     }
 
     private void IsMarried()
@@ -52,12 +61,10 @@ namespace HsaSystem.Models
       }
     }
 
-    
-
     /// <summary>
     /// Ensures the input is a valid number and then sets the Users Age.
     /// </summary>
-    private void SetUsersAge()
+    public void SetUsersAge()
     {
       var validAge = false;
 

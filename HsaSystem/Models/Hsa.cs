@@ -25,6 +25,7 @@ namespace HsaSystem.Models
     public void CreateUser()
     {
       var user = new User(_writer, _reader);
+      user = user.Build();
     }
   }
 }
