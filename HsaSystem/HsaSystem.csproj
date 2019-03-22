@@ -42,8 +42,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Input\ConsoleReader.cs" />
+    <Compile Include="Input\IReader.cs" />
     <Compile Include="Models\HsaTransaction.cs" />
     <Compile Include="Models\Hsa.cs" />
+    <Compile Include="Output\Color.cs" />
+    <Compile Include="Output\ConsoleWriter.cs" />
+    <Compile Include="Output\IWriter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\User.cs" />
