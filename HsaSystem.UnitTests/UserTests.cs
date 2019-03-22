@@ -13,6 +13,8 @@ namespace HsaSystem.Tests
     {
     }
 
+    #region AgeTests
+
     [Test]
     public void UsersAge_WhenGivenTheNumberFive_WillBeFive()
     {
@@ -20,7 +22,7 @@ namespace HsaSystem.Tests
       var fakeWriter = A.Fake<IWriter>();
       var fakeReader = A.Fake<IReader>();
       var expectedAge = 5;
-      
+
       // Act
       var sut = new User(fakeWriter, fakeReader);
       A.CallTo(() => fakeReader.ReadLine()).Returns(expectedAge.ToString());
@@ -39,16 +41,20 @@ namespace HsaSystem.Tests
       var fakeReader = A.Fake<IReader>();
       var invalidAge = "abc";
       var validAge = 1;
-      
+
       // Act
       var sut = new User(fakeWriter, fakeReader);
       A.CallTo(() => fakeReader.ReadLine()).ReturnsNextFromSequence(invalidAge, validAge.ToString());
       sut.SetUsersAge();
-      
+
       // Assert
       A.CallTo(fakeWriter).Where(x => x.Method.Name == "WriteMessage").MustHaveHappened();
       A.CallTo(() => fakeWriter.WriteMessage("\nPlease enter a valid number.\n")).MustHaveHappened();
     }
+
+    #endregion
+
+    #region ActivityLevelTests
 
     [Test]
     public void ActivityLevel_WhenGivenNumberWithinMinAndMax_ActivityLevelWillBeSet()
@@ -92,7 +98,7 @@ namespace HsaSystem.Tests
 
       // This will not get called if all input are valid numbers.
       A.CallTo(() => fakeWriter.WriteMessage("\nPlease enter a valid number.\n")).MustNotHaveHappened();
-      
+
       // Message displayed when level is outside the range.
       A.CallTo(() => fakeWriter.WriteMessage($"\nPlease enter a number between {GivenMin} and {GivenMax}.")).MustHaveHappened();
     }
@@ -120,7 +126,11 @@ namespace HsaSystem.Tests
       A.CallTo(() => fakeWriter.WriteMessage("\nPlease enter a valid number.\n")).MustHaveHappened();
     }
 
-     [Test]
+    #endregion
+
+    #region NutritionLevelTests
+
+    [Test]
     public void NutritionLevel_WhenGivenNumberWithinMinAndMax_NutritionLevelWillBeSet()
     {
       // Arrange
@@ -162,7 +172,7 @@ namespace HsaSystem.Tests
 
       // This will not get called if all input are valid numbers.
       A.CallTo(() => fakeWriter.WriteMessage("\nPlease enter a valid number.\n")).MustNotHaveHappened();
-      
+
       // Message displayed when level is outside the range.
       A.CallTo(() => fakeWriter.WriteMessage($"\nPlease enter a number between {GivenMin} and {GivenMax}.")).MustHaveHappened();
     }
@@ -189,5 +199,7 @@ namespace HsaSystem.Tests
       A.CallTo(() => fakeWriter.WriteMessage($"\nPlease Rate your Nutrition Level from {GivenMin} to {GivenMax}.")).MustHaveHappened();
       A.CallTo(() => fakeWriter.WriteMessage("\nPlease enter a valid number.\n")).MustHaveHappened();
     }
+
+    #endregion
   }
 }
