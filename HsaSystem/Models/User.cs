@@ -9,7 +9,7 @@ namespace HsaSystem.Models
     public int Age { get; private set; }
     public int ActivityLevel { get; private set; }
     public int NutritionLevel { get; private set; }
-    public bool Married { get; private set; }
+    public bool IsMarried { get; private set; }
     public int NumberOfCoveredDependents { get; private set; }
     public int SavingsDedicationLevel { get; private set; }
     public int EmployerBenefitsLevel { get; private set; }
@@ -32,12 +32,12 @@ namespace HsaSystem.Models
       SetUsersAge();
       SetLevelAndType(1, 5, LevelType.Activity);
       SetLevelAndType(1, 5, LevelType.Nutrition);
-      IsMarried();
+      IsUserMarried();
 
       return this;
     }
 
-    private void IsMarried()
+    public void IsUserMarried()
     {
       var validInput = false;
 
@@ -46,12 +46,12 @@ namespace HsaSystem.Models
         var userMarried = AskForMarried();
         if (userMarried.Equals("yes"))
         {
-          Married = true;
+          IsMarried = true;
           validInput = true;
         }
         else if (userMarried.Equals("no"))
         {
-          Married = false;
+          IsMarried = false;
           validInput = true;
         }
         else
@@ -172,7 +172,7 @@ namespace HsaSystem.Models
     /// <returns>Returns the users input in all lower case</returns>
     private string AskForMarried()
     {
-      _writer.WriteMessage("\nAre you Married? Yes or No");
+      _writer.WriteMessage("\nAre you IsMarried? Yes or No");
       return _reader.ReadLine().ToLowerInvariant();
     }
   }

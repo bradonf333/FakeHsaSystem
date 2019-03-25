@@ -201,5 +201,163 @@ namespace HsaSystem.Tests
     }
 
     #endregion
+
+    #region MarriedTests
+
+    [Test]
+    public void IsMarried_WhenGivenLowerCaseYes_WillReturnTrue()
+    {
+      // Arrange
+      var fakeWriter = A.Fake<IWriter>();
+      var fakeReader = A.Fake<IReader>();
+      const string GivenMarried = "yes";
+      const bool ExpectedMarried = true;
+
+      // Act
+      var sut = new User(fakeWriter, fakeReader);
+      A.CallTo(() => fakeReader.ReadLine()).Returns(GivenMarried);
+      sut.IsUserMarried();
+      var actualMarried = sut.IsMarried;
+
+      // Assert
+      Assert.That(actualMarried, Is.EqualTo(ExpectedMarried));
+    }
+
+    [Test]
+    public void IsMarried_WhenGivenUpperCaseYes_WillReturnTrue()
+    {
+      // Arrange
+      var fakeWriter = A.Fake<IWriter>();
+      var fakeReader = A.Fake<IReader>();
+      const string GivenMarried = "YES";
+      const bool ExpectedMarried = true;
+
+      // Act
+      var sut = new User(fakeWriter, fakeReader);
+      A.CallTo(() => fakeReader.ReadLine()).Returns(GivenMarried);
+      sut.IsUserMarried();
+      var actualMarried = sut.IsMarried;
+
+      // Assert
+      Assert.That(actualMarried, Is.EqualTo(ExpectedMarried));
+    }
+
+    [Test]
+    public void IsMarried_WhenGivenMixedCaseYes_WillReturnTrue()
+    {
+      // Arrange
+      var fakeWriter = A.Fake<IWriter>();
+      var fakeReader = A.Fake<IReader>();
+      const string GivenMarried = "YeS";
+      const bool ExpectedMarried = true;
+
+      // Act
+      var sut = new User(fakeWriter, fakeReader);
+      A.CallTo(() => fakeReader.ReadLine()).Returns(GivenMarried);
+      sut.IsUserMarried();
+      var actualMarried = sut.IsMarried;
+
+      // Assert
+      Assert.That(actualMarried, Is.EqualTo(ExpectedMarried));
+    }
+
+    [Test]
+    public void IsMarried_WhenGivenLowerCaseNo_WillReturnFalse()
+    {
+      // Arrange
+      var fakeWriter = A.Fake<IWriter>();
+      var fakeReader = A.Fake<IReader>();
+      const string GivenMarried = "no";
+      const bool ExpectedMarried = false;
+
+      // Act
+      var sut = new User(fakeWriter, fakeReader);
+      A.CallTo(() => fakeReader.ReadLine()).Returns(GivenMarried);
+      sut.IsUserMarried();
+      var actualMarried = sut.IsMarried;
+
+      // Assert
+      Assert.That(actualMarried, Is.EqualTo(ExpectedMarried));
+    }
+
+    [Test]
+    public void IsMarried_WhenGivenUpperCaseNo_WillReturnFalse()
+    {
+      // Arrange
+      var fakeWriter = A.Fake<IWriter>();
+      var fakeReader = A.Fake<IReader>();
+      const string GivenMarried = "NO";
+      const bool ExpectedMarried = false;
+
+      // Act
+      var sut = new User(fakeWriter, fakeReader);
+      A.CallTo(() => fakeReader.ReadLine()).Returns(GivenMarried);
+      sut.IsUserMarried();
+      var actualMarried = sut.IsMarried;
+
+      // Assert
+      Assert.That(actualMarried, Is.EqualTo(ExpectedMarried));
+    }
+
+    [Test]
+    public void IsMarried_WhenGivenMixedCaseNo_WillReturnFalse()
+    {
+      // Arrange
+      var fakeWriter = A.Fake<IWriter>();
+      var fakeReader = A.Fake<IReader>();
+      const string GivenMarried = "nO";
+      const bool ExpectedMarried = false;
+
+      // Act
+      var sut = new User(fakeWriter, fakeReader);
+      A.CallTo(() => fakeReader.ReadLine()).Returns(GivenMarried);
+      sut.IsUserMarried();
+      var actualMarried = sut.IsMarried;
+
+      // Assert
+      Assert.That(actualMarried, Is.EqualTo(ExpectedMarried));
+    }
+
+    [Test]
+    public void IsMarried_WhenGivenInvalidString_WillAskUserForValidInput()
+    {
+      // Arrange
+      var fakeWriter = A.Fake<IWriter>();
+      var fakeReader = A.Fake<IReader>();
+      const string InvalidMarried = "Invalid Answer";
+      const string ValidMarried = "Yes";
+      const bool ExpectedMarried = true;
+
+      // Act
+      var sut = new User(fakeWriter, fakeReader);
+      A.CallTo(() => fakeReader.ReadLine()).ReturnsNextFromSequence(InvalidMarried, ValidMarried);
+      sut.IsUserMarried();
+      var actualMarried = sut.IsMarried;
+
+      // Assert
+      Assert.That(actualMarried, Is.EqualTo(ExpectedMarried));
+    }
+
+    [Test]
+    public void IsMarried_WhenGivenInvalidInputType_WillAskUserForValidInput()
+    {
+      // Arrange
+      var fakeWriter = A.Fake<IWriter>();
+      var fakeReader = A.Fake<IReader>();
+      const int InvalidMarried = 123;
+      const string ValidMarried = "Yes";
+      const bool ExpectedMarried = true;
+
+      // Act
+      var sut = new User(fakeWriter, fakeReader);
+      A.CallTo(() => fakeReader.ReadLine()).ReturnsNextFromSequence(InvalidMarried.ToString(), ValidMarried);
+      sut.IsUserMarried();
+      var actualMarried = sut.IsMarried;
+
+      // Assert
+      Assert.That(actualMarried, Is.EqualTo(ExpectedMarried));
+    }
+
+    #endregion
   }
 }
