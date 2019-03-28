@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using HsaSystem.Input;
 using HsaSystem.Output;
 
@@ -17,10 +19,16 @@ namespace HsaSystem.Models
     private readonly IWriter _writer;
     private readonly IReader _reader;
 
+    private readonly int minLevel;
+    private readonly int maxLevel;
+
     public User(IWriter writer, IReader reader)
     {
       _writer = writer;
       _reader = reader;
+
+      minLevel = 1;
+      maxLevel = 5;
     }
 
     /// <summary>
@@ -29,161 +37,100 @@ namespace HsaSystem.Models
     /// <returns></returns>
     public User Build()
     {
-      SetUsersAge();
-      SetLevelAndType(1, 5, LevelType.Activity);
-      SetLevelAndType(1, 5, LevelType.Nutrition);
-      IsUserMarried();
+      Age = AskUserForNumber(Messages.Age());
+      ActivityLevel = AskUserForRatingBetween(minLevel, maxLevel, Messages.ActivityLevel(minLevel, maxLevel));
+      NutritionLevel = AskUserForRatingBetween(minLevel, maxLevel, Messages.NutritionLevel(minLevel, maxLevel));
+      IsMarried = AskUserYesOrNo(Messages.Married());
+      NumberOfCoveredDependents = AskUserForNumber(Messages.CoveredDependents());
+      SavingsDedicationLevel = AskUserForRatingBetween(minLevel, maxLevel, Messages.SavingsDedicationLevel(minLevel, maxLevel));
+      EmployerBenefitsLevel = AskUserForRatingBetween(minLevel, maxLevel, Messages.EmployerBenefitsRating(minLevel, maxLevel));
 
       return this;
     }
 
-    public void IsUserMarried()
+    public bool AskUserYesOrNo(string message)
     {
-      var validInput = false;
-
-      while (!validInput)
+      while (true)
       {
-        var userMarried = AskForMarried();
-        if (userMarried.Equals("yes"))
-        {
-          IsMarried = true;
-          validInput = true;
-        }
-        else if (userMarried.Equals("no"))
-        {
-          IsMarried = false;
-          validInput = true;
-        }
-        else
-        {
-          _writer.WriteMessage("\nPlease enter Yes or No.\n");
-        }
-      }
-    }
+        _writer.WriteMessage(message);
+        var userInput = _reader.ReadLine().ToLowerInvariant();
 
-    /// <summary>
-    /// Ensures the input is a valid number and then sets the Users Age.
-    /// </summary>
-    public void SetUsersAge()
-    {
-      var validAge = false;
+        if (userInput.Equals("yes"))
+        {
+          return true;
+        }
 
-      while (!validAge)
-      {
-        var age = AskForAge();
-        if (int.TryParse(age, out int parsedInt))
+        if (userInput.Equals("no"))
         {
-          Age = parsedInt;
-          validAge = true;
+          return false;
         }
-        else
-        {
-          _writer.WriteMessage("\nPlease enter a valid number.\n");
-        }
+
+        _writer.WriteMessage(Messages.ValidYesOrNo());
       }
     }
 
     /// <summary>
     /// Sets the Level and validates the rating is correct.
     /// </summary>
-    /// <param name="min">Minimum number.</param>
-    /// <param name="max">Maximum number.</param>
-    /// <param name="levelType">Type of Level to Set and Rate.</param>
-    public void SetLevelAndType(int min, int max, LevelType levelType)
-    {
-      var validLevelAndType = false;
-
-      while (!validLevelAndType)
-      {
-        var level = AskForRating(levelType.ToString(), min, max);
-
-        if (int.TryParse(level, out int parsedInt))
-        {
-          if (parsedInt >= min && parsedInt <= max)
-          {
-            SetLevel(levelType, parsedInt);
-            validLevelAndType = true;
-          }
-          else
-          {
-            _writer.WriteMessage($"\nPlease enter a number between {min} and {max}.");
-          }
-        }
-        else
-        {
-          _writer.WriteMessage("\nPlease enter a valid number.\n");
-        }
-      }
-    }
-
-    /// <summary>
-    /// Sets the Users Level depending on which type it is.
-    /// </summary>
-    /// <param name="levelType"></param>
-    /// <param name="level"></param>
-    private void SetLevel(LevelType levelType, int level)
-    {
-      switch (levelType)
-      {
-        case LevelType.Activity:
-          ActivityLevel = level;
-          break;
-        case LevelType.Nutrition:
-          NutritionLevel = level;
-          break;
-      }
-    }
-
-    /// <summary>
-    /// Display a message to prompt the User to enter their Age.
-    /// </summary>
-    /// <returns>The Users age as a string</returns>
-    private string AskForAge()
-    {
-      _writer.WriteMessage("What is your age?");
-      return _reader.ReadLine();
-    }
-
-    /// <summary>
-    /// Display a message to prompt the User to enter a rating using the provided min and max.
-    /// </summary>
-    /// <param name="itemToRate">
-    /// Item you are rating.
-    /// </param>
     /// <param name="min">
     /// The min.
     /// </param>
     /// <param name="max">
     /// The max.
     /// </param>
+    /// <param name="message">
+    /// The message.
+    /// </param>
     /// <returns>
-    /// The Users input as a string.
+    /// The <see cref="int"/>.
     /// </returns>
-    private string AskForRating(string itemToRate, int min, int max)
+    public int AskUserForRatingBetween(int min, int max, string message)
     {
-      _writer.WriteMessage($"\nPlease Rate your {itemToRate} Level from {min} to {max}.");
-      _writer.WriteMessage($"{min} being the lowest and {max} being the highest.");
-      return _reader.ReadLine();
+      while (true)
+      {
+        _writer.WriteMessage(message);
+        var userInput = _reader.ReadLine();
+
+        if (int.TryParse(userInput, out int parsedInt))
+        {
+          if (parsedInt >= min && parsedInt <= max)
+          {
+            return parsedInt;
+          }
+
+          _writer.WriteMessage(Messages.ValidRangeMessage(min, max));
+        }
+        else
+        {
+          _writer.WriteMessage(Messages.ValidNumberError());
+        }
+      }
     }
+
+    #region PrivateMethods
 
     /// <summary>
-    /// Ask if user is married.
+    /// Pass in a prompt and ask user for a number.
     /// </summary>
-    /// <returns>Returns the users input in all lower case</returns>
-    private string AskForMarried()
+    /// <param name="prompt"></param>
+    /// <returns></returns>
+    public int AskUserForNumber(string prompt)
     {
-      _writer.WriteMessage("\nAre you IsMarried? Yes or No");
-      return _reader.ReadLine().ToLowerInvariant();
+      while (true)
+      {
+        _writer.WriteMessage(prompt);
+        var userInput = _reader.ReadLine();
+        if (int.TryParse(userInput, out int parsedInt))
+        {
+          return parsedInt;
+        }
+        else
+        {
+          _writer.WriteMessage(Messages.ValidNumberError());
+        }
+      }
     }
-  }
 
-
-  /// <summary>
-  /// Different Levels a User can have.
-  /// </summary>
-  public enum LevelType
-  {
-    Activity,
-    Nutrition
+    #endregion
   }
 }

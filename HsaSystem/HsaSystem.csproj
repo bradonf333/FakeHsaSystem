@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="Input\ConsoleReader.cs" />
     <Compile Include="Input\IReader.cs" />
+    <Compile Include="Input\Messages.cs" />
     <Compile Include="Models\HsaTransaction.cs" />
     <Compile Include="Models\Hsa.cs" />
     <Compile Include="Output\Color.cs" />
@@ -58,6 +59,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="DTOs\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Input\ScenarioFile.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
