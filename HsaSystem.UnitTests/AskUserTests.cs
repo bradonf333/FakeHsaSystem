@@ -2,55 +2,146 @@ using FakeItEasy;
 using HsaSystem.Input;
 using HsaSystem.Models;
 using HsaSystem.Output;
+using Moq;
 using NUnit.Framework;
+using Times = Moq.Times;
 
 namespace HsaSystem.Tests
 {
-  public class Tests
+  public class AskUserTests
   {
     [SetUp]
     public void Setup()
     {
     }
 
-    #region AgeTests
+    #region ForNumber
+
+    [Test]
+    public void ForNumber_InvokesTheWriteMessage_WithTheCorrectArgument_WithFakes()
+    {
+      // Arrange
+      var fakeWriter = A.Fake<IWriter>();
+      var fakeReader = A.Fake<IReader>();
+      const string ExpectedPrompt = "hello world";
+      A.CallTo(() => fakeReader.ReadLine()).Returns("5");
+      var askUser = new AskUser(fakeWriter, fakeReader);
+
+      // Act
+      askUser.ForNumber(ExpectedPrompt);
+
+      // Assert
+      A.CallTo(() => fakeWriter.WriteMessage(A<string>._)).MustHaveHappenedOnceExactly();
+    }
+
+    [Test]
+    public void ForNumber_InvokesTheWriteMessage_WithTheCorrectArgument_WithMocks()
+    {
+      // Arrange
+      var writerMock = new Mock<IWriter>();
+      var readerMock = new Mock<IReader>();
+      
+      readerMock.Setup(x => x.ReadLine()).Returns("5");
+
+      var askUser = new AskUser(writerMock.Object, readerMock.Object);
+      var expectedPrompt = "hello world";
+
+      // Act
+      askUser.ForNumber(expectedPrompt);
+
+      // Assert
+      writerMock.Verify(x => x.WriteMessage(expectedPrompt), Times.Once);
+    }
+
+    [Test]
+    public void ForNumber_InvokesTheReadLine_OnlyOnce()
+    {
+      // Arrange
+      var writerMock = new Mock<IWriter>();
+      var readerMock = new Mock<IReader>();
+      readerMock.Setup(x => x.ReadLine()).Returns("5");
+      var askUser = new AskUser(writerMock.Object, readerMock.Object);
+      var expectedPrompt = "hello world";
+
+      // Act
+      askUser.ForNumber(expectedPrompt);
+
+      // Assert
+      readerMock.Verify(x => x.ReadLine(), Times.Once);
+    }
+
+    [TestCase(5)]
+    [TestCase(10)]
+    [TestCase(-10)]
+    [TestCase(0)]
+    public void AskUserForNumber_WhenGivenANumber_WillReturnThatNumber(int expectedNumber)
+    {
+      // Arrange
+      var fakeWriter = A.Fake<IWriter>();
+      var fakeReader = A.Fake<IReader>();
+      const string Prompt = "hello world";
+      A.CallTo(() => fakeReader.ReadLine()).Returns(expectedNumber.ToString());
+      var askUser = new AskUser(fakeWriter, fakeReader);
+
+      // Act
+      var actualNumber = askUser.ForNumber(Prompt);
+
+      // Assert
+      Assert.That(actualNumber, Is.EqualTo(expectedNumber));
+    }
+
+    [Test]
+    public void ForNumber_WhenGivenInvalidNumber_WillInvokeWriteMessage()
+    {
+      // TODO: Re-write with Fakes
+      // Arrange
+      var writerMock = new Mock<IWriter>();
+      var readerMock = new Mock<IReader>();
+      var askUser = new AskUser(writerMock.Object, readerMock.Object);
+      var invalidInput = "hello";
+      var validInput = "5";
+
+      readerMock.SetupSequence(x => x.ReadLine()).Returns(invalidInput).Returns(validInput);
+      var prompt = "hello world";
+
+      // Act
+      askUser.ForNumber(prompt);
+
+      // Assert
+      writerMock.Verify(x => x.WriteMessage(It.IsAny<string>()), Times.Exactly(3));
+    }
 
     //[Test]
-    //public void UsersAge_WhenGivenTheNumberFive_WillBeFive()
+    //public void Build_WhenCalled_InvokesAskUserForNumberOnce()
     //{
-    //  // Arrange
-    //  var fakeWriter = A.Fake<IWriter>();
-    //  var fakeReader = A.Fake<IReader>();
-    //  var expectedAge = 5;
+    //  var user = new UserTester();
 
-    //  // Act
-    //  var sut = new User(fakeWriter, fakeReader);
-    //  A.CallTo(() => fakeReader.ReadLine()).Returns(expectedAge.ToString());
-    //  sut.AskUserForNumber(Messages.Age());
-    //  var age = sut.Age;
-
-    //  // Assert
-    //  Assert.That(age, Is.EqualTo(expectedAge));
+    //  Assert.That(user.CounterOfAskUserForNumber, Is.EqualTo(0));
+    //  user.Build();
+    //  Assert.That(user.CounterOfAskUserForNumber, Is.EqualTo(1));
+      
     //}
 
-    //    [Test]
-    //    public void UsersAge_WhenGivenInvalidInputFirst_WillAskUserForValidInput()
-    //    {
-    //      // Arrange
-    //      var fakeWriter = A.Fake<IWriter>();
-    //      var fakeReader = A.Fake<IReader>();
-    //      var invalidAge = "abc";
-    //      var validAge = 1;
+    [Test]
+    public void UsersAge_WhenGivenInvalidInputFirst_WillAskUserForValidInput()
+    {
+      // Arrange
+      var fakeWriter = A.Fake<IWriter>();
+      var fakeReader = A.Fake<IReader>();
+      var invalidAge = "abc";
+      var validAge = 1;
 
-    //      // Act
-    //      var sut = new User(fakeWriter, fakeReader);
-    //      A.CallTo(() => fakeReader.ReadLine()).ReturnsNextFromSequence(invalidAge, validAge.ToString());
-    //      //sut.SetUsersAge();
+      // Act
+      //var sut = new User(fakeWriter, fakeReader);
+      A.CallTo(() => fakeReader.ReadLine()).ReturnsNextFromSequence(invalidAge, validAge.ToString());
+      //sut.SetUsersAge();
 
-    //      // Assert
-    //      A.CallTo(fakeWriter).Where(x => x.Method.Name == "WriteMessage").MustHaveHappened();
-    //      A.CallTo(() => fakeWriter.WriteMessage("\nPlease enter a valid number.\n")).MustHaveHappened();
-    //    }
+      // Assert
+      A.CallTo(fakeWriter).Where(x => x.Method.Name == "WriteMessage").MustHaveHappened();
+      A.CallTo(() => fakeWriter.WriteMessage("Please enter a valid number.")).MustHaveHappened();
+    }
+
+    
 
     #endregion
 
@@ -400,5 +491,18 @@ namespace HsaSystem.Tests
     //    }
 
     //    #endregion
+
+    
   }
+
+  //public class UserTester : User
+  //{
+  //  public int CounterOfAskUserForNumber { get; set; } = 0;
+
+  //  public override int AskUserForNumber(string prompt)
+  //  {
+  //    CounterOfAskUserForNumber++;
+  //    return 0;
+  //  }
+  //}
 }

@@ -45,8 +45,11 @@
     <Compile Include="Input\ConsoleReader.cs" />
     <Compile Include="Input\IReader.cs" />
     <Compile Include="Input\Messages.cs" />
+    <Compile Include="Input\TransactionFileReader.cs" />
+    <Compile Include="Models\AskUser.cs" />
     <Compile Include="Models\HsaTransaction.cs" />
     <Compile Include="Models\Hsa.cs" />
+    <Compile Include="Models\IAskUser.cs" />
     <Compile Include="Output\Color.cs" />
     <Compile Include="Output\ConsoleWriter.cs" />
     <Compile Include="Output\IWriter.cs" />

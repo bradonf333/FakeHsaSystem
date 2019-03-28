@@ -16,16 +16,19 @@ namespace HsaSystem.Models
     public int SavingsDedicationLevel { get; private set; }
     public int EmployerBenefitsLevel { get; private set; }
 
-    private readonly IWriter _writer;
-    private readonly IReader _reader;
+    private readonly IAskUser _askUser;
 
     private readonly int minLevel;
     private readonly int maxLevel;
 
-    public User(IWriter writer, IReader reader)
+    public User()
     {
-      _writer = writer;
-      _reader = reader;
+      
+    }
+
+    public User(IAskUser askUser)
+    {
+      _askUser = askUser;
 
       minLevel = 1;
       maxLevel = 5;
@@ -37,100 +40,16 @@ namespace HsaSystem.Models
     /// <returns></returns>
     public User Build()
     {
-      Age = AskUserForNumber(Messages.Age());
-      ActivityLevel = AskUserForRatingBetween(minLevel, maxLevel, Messages.ActivityLevel(minLevel, maxLevel));
-      NutritionLevel = AskUserForRatingBetween(minLevel, maxLevel, Messages.NutritionLevel(minLevel, maxLevel));
-      IsMarried = AskUserYesOrNo(Messages.Married());
-      NumberOfCoveredDependents = AskUserForNumber(Messages.CoveredDependents());
-      SavingsDedicationLevel = AskUserForRatingBetween(minLevel, maxLevel, Messages.SavingsDedicationLevel(minLevel, maxLevel));
-      EmployerBenefitsLevel = AskUserForRatingBetween(minLevel, maxLevel, Messages.EmployerBenefitsRating(minLevel, maxLevel));
+      Age = _askUser.ForNumber(Messages.Age());
+      ActivityLevel = _askUser.ForRatingBetween(minLevel, maxLevel, Messages.ActivityLevel(minLevel, maxLevel));
+      NutritionLevel = _askUser.ForRatingBetween(minLevel, maxLevel, Messages.NutritionLevel(minLevel, maxLevel));
+      IsMarried = _askUser.YesOrNo(Messages.Married());
+      NumberOfCoveredDependents = _askUser.ForNumber(Messages.CoveredDependents());
+      SavingsDedicationLevel = _askUser.ForRatingBetween(minLevel, maxLevel, Messages.SavingsDedicationLevel(minLevel, maxLevel));
+      EmployerBenefitsLevel = _askUser.ForRatingBetween(minLevel, maxLevel, Messages.EmployerBenefitsRating(minLevel, maxLevel));
 
       return this;
     }
 
-    public bool AskUserYesOrNo(string message)
-    {
-      while (true)
-      {
-        _writer.WriteMessage(message);
-        var userInput = _reader.ReadLine().ToLowerInvariant();
-
-        if (userInput.Equals("yes"))
-        {
-          return true;
-        }
-
-        if (userInput.Equals("no"))
-        {
-          return false;
-        }
-
-        _writer.WriteMessage(Messages.ValidYesOrNo());
-      }
-    }
-
-    /// <summary>
-    /// Sets the Level and validates the rating is correct.
-    /// </summary>
-    /// <param name="min">
-    /// The min.
-    /// </param>
-    /// <param name="max">
-    /// The max.
-    /// </param>
-    /// <param name="message">
-    /// The message.
-    /// </param>
-    /// <returns>
-    /// The <see cref="int"/>.
-    /// </returns>
-    public int AskUserForRatingBetween(int min, int max, string message)
-    {
-      while (true)
-      {
-        _writer.WriteMessage(message);
-        var userInput = _reader.ReadLine();
-
-        if (int.TryParse(userInput, out int parsedInt))
-        {
-          if (parsedInt >= min && parsedInt <= max)
-          {
-            return parsedInt;
-          }
-
-          _writer.WriteMessage(Messages.ValidRangeMessage(min, max));
-        }
-        else
-        {
-          _writer.WriteMessage(Messages.ValidNumberError());
-        }
-      }
-    }
-
-    #region PrivateMethods
-
-    /// <summary>
-    /// Pass in a prompt and ask user for a number.
-    /// </summary>
-    /// <param name="prompt"></param>
-    /// <returns></returns>
-    public int AskUserForNumber(string prompt)
-    {
-      while (true)
-      {
-        _writer.WriteMessage(prompt);
-        var userInput = _reader.ReadLine();
-        if (int.TryParse(userInput, out int parsedInt))
-        {
-          return parsedInt;
-        }
-        else
-        {
-          _writer.WriteMessage(Messages.ValidNumberError());
-        }
-      }
-    }
-
-    #endregion
   }
 }
